@@ -1,0 +1,36 @@
+steps:
+# setup Terraform using public terraform Docker image
+- id: terraform-init
+  name: hashicorp/terraform:0.15.4
+  args: ['init']
+
+
+# deploy the required GCP resources
+- id: terraform-apply
+  name: hashicorp/terraform:0.15.4
+  args: ['apply', '-auto-approve']
+  env:
+    - 'TF_VAR_project_id=$PROJECT_ID'
+    - 'TF_VAR_region=$_REGION'
+
+
+# [START e2e-tests-block]
+## run end-to-end tests to verify live interactions
+#- id: test-cluster
+#  name: 'python:3.7-slim'
+#  entrypoint: /bin/sh
+#  args:
+#    - -c
+#    - 'pip install -r requirements.txt && python -m pytest e2e --tfstate terraform.tfstate'
+## [END e2e-tests-block]
+
+
+## [START destroy-resources-block]
+## delete the resources to clean up
+#- id: terraform-destroy
+#  name: hashicorp/terraform:0.15.4
+#  args: ['destroy', '-auto-approve']
+#  env:
+#    - 'TF_VAR_project_id=$PROJECT_ID'
+#    - 'TF_VAR_region=$_REGION'
+## [END destroy-resources-block]
